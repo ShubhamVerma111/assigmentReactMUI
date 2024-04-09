@@ -1,6 +1,30 @@
 import { Box, Container } from "@mui/material";
+import { useEffect } from "react";
+import { getProducts } from "../api/dummyJSON";
+import { useDispatch, useSelector } from "react-redux";
+import { selectProducts, selectSkip, selectTotal, setWholeData } from "../store/dataSlice";
 
 export default function Products() {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let response = await getProducts();
+                if (response) {
+                    dispatch(setWholeData(response));
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
+    let products = useSelector(selectProducts);
+    let total = useSelector(selectTotal);
+    let skip = useSelector(selectSkip);
+
     return (
         <Box flex={4}>
             <Container>
