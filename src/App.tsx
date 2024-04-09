@@ -1,12 +1,19 @@
-import { Button } from '@mui/material'
+import { Box, Divider, Stack } from '@mui/material'
 import './App.css'
+import Navbar from './component/Navbar'
+import Filters from './component/Filters'
+import Products from './component/Products'
 
 function App() {
 
   return (
-    <div>
-      <Button variant="contained">Hello world</Button>
-    </div>
+    <Box>
+      <Navbar />
+      <Stack direction={'row'} divider={<Divider orientation="vertical" flexItem />}>
+        <Filters />
+        <Products />
+      </Stack>
+    </Box>
 
   )
 }
