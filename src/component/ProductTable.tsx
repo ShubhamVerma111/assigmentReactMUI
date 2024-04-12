@@ -5,17 +5,19 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useSelector } from "react-redux";
-import { FaArrowDown } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { selectProducts } from '../store/dataSlice';
-import { Pagination } from '@mui/material';
+import { selectProducts, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
+import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 
 export default function ProductTable() {
 
   const [page, setPage] = useState(1);
   const products = useSelector(selectProducts);
+  const dispatch = useDispatch();
   let finalProducts = products.slice((page - 1) * 10, ((page - 1) * 10) + 10);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -33,8 +35,16 @@ export default function ProductTable() {
             <TableCell>Name</TableCell>
             <TableCell>Brand</TableCell>
             <TableCell>Category</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell>Rating</TableCell>
+            <TableCell>Price
+              <IconButton aria-label="sort by price" onClick={()=>{dispatch(sortProductsByPrice())}}>
+                <IoIosArrowRoundUp />
+              </IconButton>
+            </TableCell>
+            <TableCell>Rating
+              <IconButton aria-label="sort by rating">
+              <IoIosArrowRoundDown onClick={()=>{dispatch(sortProductsByRating())}}/>
+              </IconButton>
+            </TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
@@ -44,18 +54,31 @@ export default function ProductTable() {
               key={product.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">{index + ((page-1)*10) + 1}</TableCell>
+              <TableCell component="th" scope="row">{index + ((page - 1) * 10) + 1}</TableCell>
               <TableCell>{product.title}</TableCell>
               <TableCell>{product.brand}</TableCell>
               <TableCell>{product.category}</TableCell>
               <TableCell>{product.price}</TableCell>
               <TableCell>{product.rating}</TableCell>
-              <TableCell><FaArrowDown /><MdDelete /></TableCell>
+              <TableCell>
+                <Tooltip title="Download">
+                  <IconButton aria-label="delete">
+                    <FaFileDownload />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton aria-label="delete">
+                    <MdDelete />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Pagination count={10} page={page} onChange={handleChange} />
+      <Box display={'flex'} justifyContent={"center"} alignItems={'center'} marginBottom={'20px'}>
+        <Pagination count={10} page={page} onChange={handleChange} size="large" />
+      </Box>
     </TableContainer>
   );
 }

@@ -5,8 +5,6 @@ const api = axios.create({
 })
 
 export async function getProducts() {
-    console.log('ok');
-    
     try {
         const response = await api.get('', {
             params: {
