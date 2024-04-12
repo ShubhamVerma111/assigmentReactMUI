@@ -1,34 +1,32 @@
-import { Box, Container } from "@mui/material";
-import { useEffect } from "react";
-import { getProducts } from "../api/dummyJSON";
-import { useDispatch, useSelector } from "react-redux";
-import { selectProducts, selectSkip, selectTotal, setWholeData } from "../store/dataSlice";
+import { Box, Container, Input, Typography } from "@mui/material";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectSkip, selectTotal } from "../store/dataSlice";
+import ProductTable from "./ProductTable";
 
 export default function Products() {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let response = await getProducts();
-                if (response) {
-                    dispatch(setWholeData(response));
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-
-        fetchData();
-    }, []);
-
-    let products = useSelector(selectProducts);
     let total = useSelector(selectTotal);
-    let skip = useSelector(selectSkip);
+    let [search, setSearch] = useState("")
 
     return (
-        <Box flex={4}>
+        <Box flex={4} sx={{ padding: "20px" }}>
             <Container>
-                products Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo in earum dolorem nam commodi itaque consequatur saepe maxime ratione odit.\ Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam nulla consequuntur esse? Non ratione dolorem provident doloribus nisi cumque dicta dolores quisquam corrupti, consectetur maiores ex vitae, recusandae, a praesentium impedit rem neque officiis molestias ad rerum nemo enim corporis? Temporibus placeat alias sit atque, beatae molestiae ducimus voluptatem sint non modi omnis autem consequuntur soluta quaerat neque quisquam quod blanditiis illum quam libero nam, totam, dicta repellat. Nihil fugit temporibus quo perspiciatis ea optio consequuntur nostrum vero quis voluptate.
+                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography>
+                        Showing 10 out of {total}
+                    </Typography>
+                    <Input
+                        sx={{border:"1px solid", padding:"2px 2px 2px 10px", borderRadius:"5px"}}
+                        value={search}
+                        onChange={(e) => { setSearch(e.target.value) }}
+                        placeholder="Search"
+                        disableUnderline
+                    />
+
+                </Box>
+            </Container>
+            <Container>
+                <ProductTable />
             </Container>
         </Box>
     )
