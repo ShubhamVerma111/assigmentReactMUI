@@ -1,11 +1,8 @@
 import { Box, Container, Input, Typography } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { selectSkip, selectTotal } from "../store/dataSlice";
 import ProductTable from "./ProductTable";
 
 export default function Products() {
-    let total = useSelector(selectTotal);
     let [search, setSearch] = useState("")
 
     return (
@@ -13,7 +10,7 @@ export default function Products() {
             <Container>
                 <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
                     <Typography>
-                        Showing 10 out of {total}
+                        Showing 10 out of 100
                     </Typography>
                     <Input
                         sx={{border:"1px solid", padding:"2px 2px 2px 10px", borderRadius:"5px"}}

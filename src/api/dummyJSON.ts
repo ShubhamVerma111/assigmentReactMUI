@@ -4,15 +4,17 @@ const api = axios.create({
     baseURL: 'https://dummyjson.com/products'
 })
 
-export async function getProducts(skip:number = 0) {
+export async function getProducts() {
+    console.log('ok');
+    
     try {
         const response = await api.get('', {
-            params :{
-                skip: skip,
-                limit: 10
+            params: {
+                limit: 100,
+                select: 'title,description,price,discountPercentage,rating,stock,brand,category'
             }
         });
-        return response.data;
+        return response.data.products;
     } catch (error) {
         console.error('Error fetching data:', error);
         throw error;

@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getProducts } from "../api/dummyJSON";
 
-interface product {
+type product = {
     "id": number,
     "title": string,
     "description": string,
@@ -9,40 +10,40 @@ interface product {
     "rating": number,
     "stock": number,
     "brand": string,
-    "category": string,
-    "thumbnail": string,
-    "images": string[]
+    "category": string
 }
 
 type data = {
-    "products": product[],
-    "total": number,
-    "skip": number,
-    "limit": number
+    products: product[];
 }
 
 let initialState: data = {
-    'products': [],
-    'total': 0,
-    'skip': 0,
-    'limit': 0
-}
+    products: []
+};
 
-export const dataSlice = createSlice({
-    name: "products",
+export const fetchData = createAsyncThunk(
+    'data/fetchData',
+    async () => {
+        let response = await getProducts();
+        return response
+    }
+);
+
+const dataSlice = createSlice({
+    name: 'data',
     initialState,
     reducers: {
-        setWholeData: (state, action) => {
-            state.products = action.payload.products;
-            state.total = action.payload.total;
-            state.skip = action.payload.skip;
-            state.limit = action.payload.limit;
-        }
+        // sortData: (state, action) => {
+            
+        // }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.products = action.payload;
+        });
     }
-})
+});
 
-export default dataSlice.reducer
-export const { setWholeData } = dataSlice.actions;
-export const selectProducts = (state:{data:data}) => state.data.products; 
-export const selectTotal = (state:{data:data}) => state.data.total; 
-export const selectSkip= (state:{data:data}) => state.data.skip; 
+export const selectProducts = (state: { data: data }) => state.data.products
+// export const { sortData } = dataSlice.actions;
+export default dataSlice.reducer;
