@@ -13,18 +13,18 @@ import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 
-export default function ProductTable() {
+const ProductTable:React.FC<{search:string}> = ({search}) => {
 
   const [page, setPage] = useState(1);
   const products = useSelector(selectProducts);
   const dispatch = useDispatch();
-  let finalProducts = products.slice((page - 1) * 10, ((page - 1) * 10) + 10);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-  useEffect(() => {
-    finalProducts = products.slice((page - 1) * 10, ((page - 1) * 10) + 10);
-  }, [page]);
+
+  let filteredProduct = products.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+  let fLenght = filteredProduct.length;
+  filteredProduct = filteredProduct.slice((page - 1) * 10, ((page - 1) * 10) + 10);
 
   return (
     <TableContainer component={Paper}>
@@ -41,15 +41,15 @@ export default function ProductTable() {
               </IconButton>
             </TableCell>
             <TableCell>Rating
-              <IconButton aria-label="sort by rating">
-              <IoIosArrowRoundDown onClick={()=>{dispatch(sortProductsByRating())}}/>
+              <IconButton aria-label="sort by rating" onClick={()=>{dispatch(sortProductsByRating())}}>
+              <IoIosArrowRoundDown />
               </IconButton>
             </TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {finalProducts.map((product, index) => (
+          {filteredProduct.map((product, index) => (
             <TableRow
               key={product.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -77,8 +77,10 @@ export default function ProductTable() {
         </TableBody>
       </Table>
       <Box display={'flex'} justifyContent={"center"} alignItems={'center'} marginBottom={'20px'}>
-        <Pagination count={10} page={page} onChange={handleChange} size="large" />
+        <Pagination count={Math.ceil(fLenght/10)} page={page} onChange={handleChange} size="large" />
       </Box>
     </TableContainer>
   );
 }
+
+export default ProductTable;

@@ -23,7 +23,7 @@ export default function Products() {
                 </Box>
             </Container>
             <Container>
-                <ProductTable />
+                <ProductTable search={search}/>
             </Container>
         </Box>
     )
