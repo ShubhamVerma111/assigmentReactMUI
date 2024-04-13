@@ -5,26 +5,34 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { selectProducts, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
+import { sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
 import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 
-const ProductTable:React.FC<{search:string}> = ({search}) => {
+type product = {
+  "id": number,
+  "title": string,
+  "description": string,
+  "price": number,
+  "discountPercentage": number,
+  "rating": number,
+  "stock": number,
+  "brand": string,
+  "category": string
+}
+interface productsTableProp {
+  filteredProduct: product[],
+  fLenght: number,
+  page: number,
+  handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void
+}
 
-  const [page, setPage] = useState(1);
-  const products = useSelector(selectProducts);
+const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, page, handlePageChange }) => {
+
   const dispatch = useDispatch();
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
-
-  let filteredProduct = products.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
-  let fLenght = filteredProduct.length;
-  filteredProduct = filteredProduct.slice((page - 1) * 10, ((page - 1) * 10) + 10);
 
   return (
     <TableContainer component={Paper}>
@@ -36,13 +44,13 @@ const ProductTable:React.FC<{search:string}> = ({search}) => {
             <TableCell>Brand</TableCell>
             <TableCell>Category</TableCell>
             <TableCell>Price
-              <IconButton aria-label="sort by price" onClick={()=>{dispatch(sortProductsByPrice())}}>
+              <IconButton aria-label="sort by price" onClick={() => { dispatch(sortProductsByPrice()) }}>
                 <IoIosArrowRoundUp />
               </IconButton>
             </TableCell>
             <TableCell>Rating
-              <IconButton aria-label="sort by rating" onClick={()=>{dispatch(sortProductsByRating())}}>
-              <IoIosArrowRoundDown />
+              <IconButton aria-label="sort by rating" onClick={() => { dispatch(sortProductsByRating()) }}>
+                <IoIosArrowRoundDown />
               </IconButton>
             </TableCell>
             <TableCell>Action</TableCell>
@@ -77,7 +85,7 @@ const ProductTable:React.FC<{search:string}> = ({search}) => {
         </TableBody>
       </Table>
       <Box display={'flex'} justifyContent={"center"} alignItems={'center'} marginBottom={'20px'}>
-        <Pagination count={Math.ceil(fLenght/10)} page={page} onChange={handleChange} size="large" />
+        <Pagination count={Math.ceil(fLenght / 10)} page={page} onChange={handlePageChange} size="large" />
       </Box>
     </TableContainer>
   );
