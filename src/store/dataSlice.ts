@@ -61,5 +61,7 @@ const dataSlice = createSlice({
 });
 
 export const selectProducts = (state: { data: data }) => state.data.products
+export const selectSortPrice = (state: { data: data }) => state.data.sortPrice
+export const selectSortRating = (state: { data: data }) => state.data.sortRating
 export const { sortProductsByPrice, sortProductsByRating } = dataSlice.actions;
 export default dataSlice.reducer;

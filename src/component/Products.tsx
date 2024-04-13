@@ -3,18 +3,29 @@ import { useState } from "react";
 import ProductTable from "./ProductTable";
 import { useSelector } from "react-redux";
 import { selectProducts } from "../store/dataSlice";
+import { selectFilter, selectIsFilterSelected } from "../store/filterSlice";
 
 export default function Products() {
     let [search, setSearch] = useState("")
     const [page, setPage] = useState(1);
     const products = useSelector(selectProducts);
+    const categories = useSelector(selectFilter);
+    const isFilterSelected = useSelector(selectIsFilterSelected);
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
-    let filteredProduct = products.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+    let filteredProduct = products.filter(product => {
+        if(!(product.title.toLowerCase().includes(search.toLowerCase())))
+            return false;
+        if(isFilterSelected)
+            return categories.includes(product.category);
+        return true
+    });
     let fLenght = filteredProduct.length;
     filteredProduct = filteredProduct.slice((page - 1) * 10, ((page - 1) * 10) + 10);
+
+    if(Math.ceil(fLenght / 10) < page) setPage(1);
 
     return (
         <Box flex={4} sx={{ padding: "20px" }}>
@@ -30,7 +41,6 @@ export default function Products() {
                         placeholder="Search"
                         disableUnderline
                     />
-
                 </Box>
             </Container>
             <Container>

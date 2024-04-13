@@ -5,10 +5,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
+import { selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
 import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 
@@ -33,6 +33,8 @@ interface productsTableProp {
 const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, page, handlePageChange }) => {
 
   const dispatch = useDispatch();
+  const sortPrice = useSelector(selectSortPrice);
+  const sortRating = useSelector(selectSortRating);
 
   return (
     <TableContainer component={Paper}>
@@ -45,12 +47,12 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
             <TableCell>Category</TableCell>
             <TableCell>Price
               <IconButton aria-label="sort by price" onClick={() => { dispatch(sortProductsByPrice()) }}>
-                <IoIosArrowRoundUp />
+              {sortPrice?<IoIosArrowRoundDown />: <IoIosArrowRoundUp />}
               </IconButton>
             </TableCell>
             <TableCell>Rating
               <IconButton aria-label="sort by rating" onClick={() => { dispatch(sortProductsByRating()) }}>
-                <IoIosArrowRoundDown />
+                {sortRating?<IoIosArrowRoundDown />: <IoIosArrowRoundUp />}
               </IconButton>
             </TableCell>
             <TableCell>Action</TableCell>
