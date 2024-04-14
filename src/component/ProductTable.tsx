@@ -11,6 +11,7 @@ import { MdDelete } from "react-icons/md";
 import { selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
 import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
+import download from '../download';
 
 type product = {
   "id": number,
@@ -47,12 +48,12 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
             <TableCell>Category</TableCell>
             <TableCell>Price
               <IconButton aria-label="sort by price" onClick={() => { dispatch(sortProductsByPrice()) }}>
-              {sortPrice?<IoIosArrowRoundDown />: <IoIosArrowRoundUp />}
+                {sortPrice ? <IoIosArrowRoundDown /> : <IoIosArrowRoundUp />}
               </IconButton>
             </TableCell>
             <TableCell>Rating
               <IconButton aria-label="sort by rating" onClick={() => { dispatch(sortProductsByRating()) }}>
-                {sortRating?<IoIosArrowRoundDown />: <IoIosArrowRoundUp />}
+                {sortRating ? <IoIosArrowRoundDown /> : <IoIosArrowRoundUp />}
               </IconButton>
             </TableCell>
             <TableCell>Action</TableCell>
@@ -72,7 +73,7 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
               <TableCell>{product.rating}</TableCell>
               <TableCell>
                 <Tooltip title="Download">
-                  <IconButton aria-label="delete">
+                  <IconButton aria-label="delete" onClick={()=>{download(product, product.title)}}>
                     <FaFileDownload />
                   </IconButton>
                 </Tooltip>

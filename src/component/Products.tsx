@@ -1,5 +1,5 @@
 import { Box, Container, Input, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductTable from "./ProductTable";
 import { useSelector } from "react-redux";
 import { selectProducts } from "../store/dataSlice";
@@ -16,16 +16,18 @@ export default function Products() {
     };
 
     let filteredProduct = products.filter(product => {
-        if(!(product.title.toLowerCase().includes(search.toLowerCase())))
+        if (!(product.title.toLowerCase().includes(search.toLowerCase())))
             return false;
-        if(isFilterSelected)
+        if (isFilterSelected)
             return categories.includes(product.category);
         return true
     });
     let fLenght = filteredProduct.length;
     filteredProduct = filteredProduct.slice((page - 1) * 10, ((page - 1) * 10) + 10);
 
-    if(Math.ceil(fLenght / 10) < page) setPage(1);
+    useEffect(() => {
+        if (Math.ceil(fLenght / 10) < page) setPage(1);
+    }, [fLenght, page]);
 
     return (
         <Box flex={4} sx={{ padding: "20px" }}>
