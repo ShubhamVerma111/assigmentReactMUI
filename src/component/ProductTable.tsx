@@ -8,10 +8,11 @@ import Paper from '@mui/material/Paper';
 import { useDispatch, useSelector } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
+import { deleteProductById, selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
 import { Box, IconButton, Pagination, Tooltip } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 import download from '../download';
+import { deleteProduct } from '../api/dummyJSON';
 
 type product = {
   "id": number,
@@ -36,6 +37,11 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
   const dispatch = useDispatch();
   const sortPrice = useSelector(selectSortPrice);
   const sortRating = useSelector(selectSortRating);
+
+  async function handelDelete(id:number){
+    let isDeleted = await deleteProduct(id);
+    if(isDeleted) dispatch(deleteProductById(id));
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -78,7 +84,7 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Delete">
-                  <IconButton aria-label="delete">
+                  <IconButton aria-label="delete" onClick={()=> {handelDelete(product.id)}}>
                     <MdDelete />
                   </IconButton>
                 </Tooltip>
