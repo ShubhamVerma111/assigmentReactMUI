@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getProducts } from "../api/dummyJSON";
 
-interface product {
+type product = {
     "id": number,
     "title": string,
     "description": string,
@@ -9,40 +10,67 @@ interface product {
     "rating": number,
     "stock": number,
     "brand": string,
-    "category": string,
-    "thumbnail": string,
-    "images": string[]
+    "category": string
 }
 
 type data = {
-    "products": product[],
-    "total": number,
-    "skip": number,
-    "limit": number
+    products: product[],
+    sortPrice: boolean,
+    sortRating: boolean
+
 }
 
 let initialState: data = {
-    'products': [],
-    'total': 0,
-    'skip': 0,
-    'limit': 0
-}
+    products: [],
+    sortPrice: true,
+    sortRating: true
+};
 
-export const dataSlice = createSlice({
-    name: "products",
+export const fetchData = createAsyncThunk(
+    'data/fetchData',
+    async () => {
+        let response = await getProducts();
+        return response
+    }
+);
+
+const dataSlice = createSlice({
+    name: 'data',
     initialState,
     reducers: {
-        setWholeData: (state, action) => {
-            state.products = action.payload.products;
-            state.total = action.payload.total;
-            state.skip = action.payload.skip;
-            state.limit = action.payload.limit;
+        sortProductsByPrice(state) {
+            state.products.sort((a, b) => {
+                if (state.sortPrice) return a.price - b.price;
+                return b.price - a.price;
+            });
+            state.sortPrice = !state.sortPrice;
+        },
+        sortProductsByRating(state) {
+            state.products.sort((a, b) => {
+                if (state.sortRating) return b.rating - a.rating;
+                return a.rating - b.rating;
+            });
+            state.sortRating = !state.sortRating;
+        },
+        deleteProductById(state, action) {
+            state.products = state.products.filter(product => product.id !== action.payload);
+        },
+        updateProductById: (state, action) => {
+            const updatedProduct = action.payload;
+            state.products = state.products.map(product =>
+                product.id === updatedProduct.id ? { ...product, ...updatedProduct } : product
+            );
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchData.fulfilled, (state, action) => {
+            state.products = action.payload;
+        });
     }
-})
+});
 
-export default dataSlice.reducer
-export const { setWholeData } = dataSlice.actions;
-export const selectProducts = (state:{data:data}) => state.data.products; 
-export const selectTotal = (state:{data:data}) => state.data.total; 
-export const selectSkip= (state:{data:data}) => state.data.skip; 
+export const selectProducts = (state: { data: data }) => state.data.products
+export const selectSortPrice = (state: { data: data }) => state.data.sortPrice
+export const selectSortRating = (state: { data: data }) => state.data.sortRating
+export const { sortProductsByPrice, sortProductsByRating, deleteProductById, updateProductById } = dataSlice.actions;
+export default dataSlice.reducer;
