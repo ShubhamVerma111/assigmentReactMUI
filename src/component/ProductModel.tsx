@@ -3,6 +3,9 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { FormEvent, useState } from 'react';
 import { Grid, NativeSelect, TextField } from '@mui/material';
+import { updateData } from '../api/dummyJSON';
+import { useDispatch } from 'react-redux';
+import { updateProductById } from '../store/dataSlice';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -47,18 +50,22 @@ const ProductModal: React.FC<productModelProp> = ({ product, isProductModelOpen,
 
     const [formData, setFormData] = useState<productType>(product);
     const [errors, setErrors] = useState<Partial<errorType>>({});
+    const dispatch = useDispatch();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name as string]: value });
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const validationErrors = validateForm(formData);
         if (Object.keys(validationErrors).length === 0) {
-            console.log(formData);
-            // You can submit the form here
+            let isUpdated = await updateData(formData);
+            if (isUpdated) { 
+                dispatch(updateProductById(isUpdated)); 
+                setProductModelClose();
+            }
         } else {
             setErrors(validationErrors);
         }
@@ -178,7 +185,7 @@ const ProductModal: React.FC<productModelProp> = ({ product, isProductModelOpen,
                             </Grid>
                             <Grid item xs={6}>
                                 <NativeSelect
-                                fullWidth
+                                    fullWidth
                                     defaultValue={product.category}
                                     disabled
                                 >

@@ -40,20 +40,26 @@ const dataSlice = createSlice({
     reducers: {
         sortProductsByPrice(state) {
             state.products.sort((a, b) => {
-                if(state.sortPrice) return a.price - b.price;
+                if (state.sortPrice) return a.price - b.price;
                 return b.price - a.price;
             });
             state.sortPrice = !state.sortPrice;
         },
         sortProductsByRating(state) {
             state.products.sort((a, b) => {
-                if(state.sortRating) return b.rating - a.rating;
+                if (state.sortRating) return b.rating - a.rating;
                 return a.rating - b.rating;
             });
             state.sortRating = !state.sortRating;
         },
-        deleteProductById(state, action){
+        deleteProductById(state, action) {
             state.products = state.products.filter(product => product.id !== action.payload);
+        },
+        updateProductById: (state, action) => {
+            const updatedProduct = action.payload;
+            state.products = state.products.map(product =>
+                product.id === updatedProduct.id ? { ...product, ...updatedProduct } : product
+            );
         }
     },
     extraReducers: (builder) => {
@@ -66,5 +72,5 @@ const dataSlice = createSlice({
 export const selectProducts = (state: { data: data }) => state.data.products
 export const selectSortPrice = (state: { data: data }) => state.data.sortPrice
 export const selectSortRating = (state: { data: data }) => state.data.sortRating
-export const { sortProductsByPrice, sortProductsByRating, deleteProductById } = dataSlice.actions;
+export const { sortProductsByPrice, sortProductsByRating, deleteProductById, updateProductById } = dataSlice.actions;
 export default dataSlice.reducer;
