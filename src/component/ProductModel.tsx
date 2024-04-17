@@ -188,6 +188,7 @@ const ProductModal: React.FC<productModelProp> = ({ product, isProductModelOpen,
                                     fullWidth
                                     defaultValue={product.category}
                                     disabled
+                                    
                                 >
                                     <option value={product.category}>{product.category}</option>
                                 </NativeSelect>

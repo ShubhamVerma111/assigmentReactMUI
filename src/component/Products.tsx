@@ -6,7 +6,7 @@ import { selectProducts } from "../store/dataSlice";
 import { selectFilter, selectIsFilterSelected } from "../store/filterSlice";
 
 export default function Products() {
-    let [search, setSearch] = useState("")
+    const [search, setSearch] = useState("")
     const [page, setPage] = useState(1);
     const products = useSelector(selectProducts);
     const categories = useSelector(selectFilter);

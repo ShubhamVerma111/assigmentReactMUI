@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { deleteProductById, selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
-import { Box, Button, IconButton, Pagination, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Pagination, Tooltip, Typography } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 import download from '../download';
 import { deleteProduct } from '../api/dummyJSON';
@@ -69,7 +69,7 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
-              <TableCell>Name</TableCell>
+              <TableCell width={'15%'}>Name</TableCell>
               <TableCell>Brand</TableCell>
               <TableCell>Category</TableCell>
               <TableCell>Price
@@ -92,7 +92,7 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">{index + ((page - 1) * 10) + 1}</TableCell>
-                <TableCell><Button onClick={()=>{openProduct(product)}} variant="text">{product.title}</Button></TableCell>
+                <TableCell><Typography onClick={()=>{openProduct(product)}} >{product.title}</Typography></TableCell>
                 <TableCell>{product.brand}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.price}</TableCell>
