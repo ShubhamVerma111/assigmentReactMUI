@@ -32,7 +32,7 @@ export default function Products() {
     return (
         <Box flex={4} sx={{ padding: "20px" }}>
             <Container>
-                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                <Box display={'flex'} marginBottom={'10px'} justifyContent={'space-between'} alignItems={'center'}>
                     <Typography>
                         Showing {filteredProduct.length} out of {fLenght}
                     </Typography>

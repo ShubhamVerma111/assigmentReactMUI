@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { deleteProductById, selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
-import { Box, Button, IconButton, Pagination, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Pagination, Tooltip, Typography } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 import download from '../download';
 import { deleteProduct } from '../api/dummyJSON';
@@ -64,8 +64,8 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer component={Paper} sx={{maxHeight:'440px'}}>
+        <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
@@ -91,16 +91,16 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
                 key={product.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="row">{index + ((page - 1) * 10) + 1}</TableCell>
-                <TableCell><Typography onClick={()=>{openProduct(product)}} >{product.title}</Typography></TableCell>
-                <TableCell>{product.brand}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.rating}</TableCell>
-                <TableCell>
+                <TableCell sx={{width:'5%'}}>{index + ((page - 1) * 10) + 1}</TableCell>
+                <TableCell sx={{width:'25%'}}><Typography onClick={()=>{openProduct(product)}} >{product.title}</Typography></TableCell>
+                <TableCell sx={{width:'10%'}}>{product.brand}</TableCell>
+                <TableCell sx={{width:'15%'}}>{product.category}</TableCell>
+                <TableCell sx={{width:'15%', textAlign:'center'}}>{product.price}</TableCell>
+                <TableCell sx={{width:'15%', textAlign:'center'}}>{product.rating}</TableCell>
+                <TableCell sx={{width:'15%'}}>
                   <Tooltip title="Download">
-                    <IconButton aria-label="delete" onClick={() => { download(product, product.title) }}>
-                      <FaFileDownload />
+                    <IconButton aria-label="delete"  onClick={() => { download(product, product.title) }}>
+                      <FaFileDownload size={'20px'}/>
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
