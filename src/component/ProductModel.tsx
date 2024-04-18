@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { FormEvent, useState } from 'react';
-import { Grid, NativeSelect, TextField } from '@mui/material';
+import { FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
 import { updateData } from '../api/dummyJSON';
 import { useDispatch } from 'react-redux';
 import { updateProductById } from '../store/dataSlice';
@@ -62,8 +62,8 @@ const ProductModal: React.FC<productModelProp> = ({ product, isProductModelOpen,
         const validationErrors = validateForm(formData);
         if (Object.keys(validationErrors).length === 0) {
             let isUpdated = await updateData(formData);
-            if (isUpdated) { 
-                dispatch(updateProductById(isUpdated)); 
+            if (isUpdated) {
+                dispatch(updateProductById(isUpdated));
                 setProductModelClose();
             }
         } else {
@@ -184,14 +184,17 @@ const ProductModal: React.FC<productModelProp> = ({ product, isProductModelOpen,
                                 />
                             </Grid>
                             <Grid item xs={6}>
-                                <NativeSelect
-                                    fullWidth
-                                    defaultValue={product.category}
-                                    disabled
-                                    
-                                >
-                                    <option value={product.category}>{product.category}</option>
-                                </NativeSelect>
+                                <FormControl variant="standard" fullWidth>
+                                    <InputLabel id="demo-simple-select-standard-label">Category</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-standard-label"
+                                        id="demo-simple-select-standard"
+                                        value={product.category}
+                                        disabled
+                                    >
+                                        <option value={product.category}>{product.category}</option>
+                                    </Select>
+                                </FormControl>
                             </Grid>
                         </Grid>
                         <Box paddingTop={'20px'} textAlign={'right'}>
