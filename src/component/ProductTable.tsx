@@ -9,12 +9,12 @@ import Paper from '@mui/material/Paper';
 import { useDispatch, useSelector } from "react-redux";
 import { FaFileDownload } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { deleteProductById, selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
-import { Box, IconButton, Pagination, Tooltip, Typography } from '@mui/material';
+import { addMoreToProducts, deleteProductById, selectProducts, selectSortPrice, selectSortRating, sortProductsByPrice, sortProductsByRating } from '../store/dataSlice';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from 'react-icons/io';
 import download from '../download';
 import { deleteProduct } from '../api/dummyJSON';
-import { useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 type product = {
   "id": number,
@@ -28,17 +28,20 @@ type product = {
   "category": string
 }
 interface productsTableProp {
-  filteredProduct: product[],
-  fLenght: number,
-  page: number,
-  handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void
+  search: string
 }
 
-const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, page, handlePageChange }) => {
+const ProductTable: React.FC<productsTableProp> = ({ search }) => {
 
   const dispatch = useDispatch();
   const sortPrice = useSelector(selectSortPrice);
   const sortRating = useSelector(selectSortRating);
+  const filteredProduct = useSelector(selectProducts);
+  const totalLen = 100;
+  const currLen = useRef(filteredProduct.length);
+  const [isProductModelOpen, setProductModelOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const tableRef = useRef<any>();
   const [modelProduct, setModelProduct] = useState<product>({
     "id": -1,
     "title": '',
@@ -50,21 +53,50 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
     "brand": '',
     "category": ''
   });
-  const [isProductModelOpen, setProductModelOpen] = useState<boolean>(false);
 
   async function handelDelete(id: number) {
     let isDeleted = await deleteProduct(id);
     if (isDeleted) dispatch(deleteProductById(id));
   }
 
-  function openProduct(product:product){
+  function openProduct(product: product) {
     setModelProduct(product);
     setProductModelOpen(true);
   }
 
+  let timeout:any;
+  const handleScroll = useCallback(() => {
+    const scrollTop = tableRef?.current?.scrollTop;
+    const clientHeight = tableRef?.current?.clientHeight;
+    const scrollHeight = tableRef?.current?.scrollHeight;
+    const scrolledToBottom = scrollTop + clientHeight >= scrollHeight-2;
+
+    // console.log(scrolledToBottom , !loading , currLen.current !== totalLen);
+    if (scrolledToBottom && !loading && currLen.current !== totalLen) {
+      setLoading(true);
+      console.log('start');
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        console.log('end');
+        dispatch(addMoreToProducts());
+        setLoading(false);
+      }, 4000)
+    }
+  }, [loading, totalLen]);
+
+  useEffect(()=>{
+    currLen.current = filteredProduct.length;
+  },[filteredProduct])
+
+
+  useLayoutEffect(() => {
+    tableRef?.current?.addEventListener('scroll', handleScroll);
+    return () => { tableRef?.current?.removeEventListener('scroll', handleScroll); }
+  }, [])
+
   return (
     <>
-      <TableContainer component={Paper} sx={{maxHeight:'440px'}}>
+      <TableContainer component={Paper} sx={{ maxHeight: '440px' }} ref={tableRef}>
         <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -91,16 +123,16 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
                 key={product.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell sx={{width:'5%'}}>{index + ((page - 1) * 10) + 1}</TableCell>
-                <TableCell sx={{width:'25%'}}><Typography onClick={()=>{openProduct(product)}} >{product.title}</Typography></TableCell>
-                <TableCell sx={{width:'10%'}}>{product.brand}</TableCell>
-                <TableCell sx={{width:'15%'}}>{product.category}</TableCell>
-                <TableCell sx={{width:'15%', textAlign:'center'}}>{product.price}</TableCell>
-                <TableCell sx={{width:'15%', textAlign:'center'}}>{product.rating}</TableCell>
-                <TableCell sx={{width:'15%'}}>
+                <TableCell sx={{ width: '5%' }}>{index + 1}</TableCell>
+                <TableCell sx={{ width: '25%' }}><Typography onClick={() => { openProduct(product) }} >{product.title}</Typography></TableCell>
+                <TableCell sx={{ width: '10%' }}>{product.brand}</TableCell>
+                <TableCell sx={{ width: '15%' }}>{product.category}</TableCell>
+                <TableCell sx={{ width: '15%', textAlign: 'center' }}>{product.price}</TableCell>
+                <TableCell sx={{ width: '15%', textAlign: 'center' }}>{product.rating}</TableCell>
+                <TableCell sx={{ width: '15%' }}>
                   <Tooltip title="Download">
-                    <IconButton aria-label="delete"  onClick={() => { download(product, product.title) }}>
-                      <FaFileDownload size={'20px'}/>
+                    <IconButton aria-label="delete" onClick={() => { download(product, product.title) }}>
+                      <FaFileDownload size={'20px'} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
@@ -114,15 +146,15 @@ const ProductTable: React.FC<productsTableProp> = ({ filteredProduct, fLenght, p
           </TableBody>
         </Table>
         <Box display={'flex'} justifyContent={"center"} alignItems={'center'} marginBottom={'20px'}>
-          <Pagination count={Math.ceil(fLenght / 10)} page={page} onChange={handlePageChange} size="large" />
+          {loading && <p>Loading...</p>}
         </Box>
 
       </TableContainer>
-      {isProductModelOpen && <ProductModal 
-        product = {modelProduct}
-        isProductModelOpen = {isProductModelOpen}
-        setProductModelClose = {()=>{setProductModelOpen(false)}}
-      /> }
+      {isProductModelOpen && <ProductModal
+        product={modelProduct}
+        isProductModelOpen={isProductModelOpen}
+        setProductModelClose={() => { setProductModelOpen(false) }}
+      />}
     </>
   );
 }
